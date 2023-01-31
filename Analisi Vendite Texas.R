@@ -162,7 +162,7 @@ ggplot()+
              color="orange", linetype="dashed", size=1)+
   geom_vline(aes(xintercept=Mode(volume)),
              color="yellow", linetype="dashed", size=1)+
-  xlab("Sales")+
+  xlab("Volume")+
   ylab("Density")+
   labs(title = "Distribuzione Volume")
 
@@ -172,6 +172,109 @@ skewness(volume)
 kurtosis(volume)-3
 
 #MEDIAN PRICE
+summary(median_price)
+IQR(median_price)
+max(median_price)-min(median_price)
+Mode(median_price)
+
+#dividiamo in classi il volume per osservarne la distribuzione di frequenza
+median_price_cl = cut(median_price,seq(70000,180000,10000))#divisa in 7 classi da 1 centimetro l'uno
+
+df_freq_median_price = distribuzione_assoluta(median_price_cl)
+df_freq_median_price
+
+var_median_price=var(median_price)#quanto è varia la nostra distribuzione
+sd_median_price=sd(median_price)#distanza media dei singoli dati
+cv_median_price=CV(median_price)#ci salviamo il coefficente di variazione per futuri confronti
+
+ggplot()+
+  geom_density(aes(x=median_price),col="darkblue",fill="lightblue")+
+  geom_vline(aes(xintercept=mean(median_price)),
+             color="red", linetype="dashed", size=1)+
+  geom_vline(aes(xintercept=quantile(median_price,seq(0,1,0.25))),
+             color="green3", linetype="dashed", size=1)+
+  geom_vline(aes(xintercept=median(median_price)),
+             color="orange", linetype="dashed", size=1)+
+  geom_vline(aes(xintercept=Mode(median_price)),
+             color="yellow", linetype="dashed", size=1)+
+  xlab("Medina Price")+
+  ylab("Density")+
+  labs(title = "Distribuzione Median Price")
+
+#simmetria
+skewness(median_price)
+#curtosi
+kurtosis(median_price)-3
+
+#LISTING
+summary(listings)
+IQR(listings)
+max(listings)-min(listings)
+Mode(listings)
+
+#dividiamo in classi il volume per osservarne la distribuzione di frequenza
+listings_cl = cut(listings,seq(70000,180000,10000))#divisa in 7 classi da 1 centimetro l'uno
+
+df_freq_listings = distribuzione_assoluta(listings)
+df_freq_listings
+
+var_listings=var(listings)#quanto è varia la nostra distribuzione
+sd_listings=sd(listings)#distanza media dei singoli dati
+cv_listings=CV(listings)#ci salviamo il coefficente di variazione per futuri confronti
+
+ggplot()+
+  geom_density(aes(x=listings),col="darkblue",fill="lightblue")+
+  geom_vline(aes(xintercept=mean(listings)),
+             color="red", linetype="dashed", size=1)+
+  geom_vline(aes(xintercept=quantile(listings,seq(0,1,0.25))),
+             color="green3", linetype="dashed", size=1)+
+  geom_vline(aes(xintercept=median(listings)),
+             color="orange", linetype="dashed", size=1)+
+  geom_vline(aes(xintercept=Mode(listings)),
+             color="yellow", linetype="dashed", size=1)+
+  xlab("Listings")+
+  ylab("Density")+
+  labs(title = "Distribuzione Listings")
+
+#simmetria
+skewness(listings)
+#curtosi
+kurtosis(listings)-3
+
+#MONTHS INVENTORY
+summary(monts_inventory)
+IQR(months_inventory)
+max(months_inventory)-min(months_inventory)
+Mode(months_inventory)
+
+#dividiamo in classi il volume per osservarne la distribuzione di frequenza
+months_inventory_cl = cut(months_inventory,seq(70000,180000,10000))#divisa in 7 classi da 1 centimetro l'uno
+
+df_freq_months_inventory = distribuzione_assoluta(months_inventory)
+df_freq_months_inventory
+
+var_months_inventory=var(months_inventory)#quanto è varia la nostra distribuzione
+sd_months_inventory=sd(months_inventory)#distanza media dei singoli dati
+cv_months_inventory=CV(months_inventory)#ci salviamo il coefficente di variazione per futuri confronti
+
+ggplot()+
+  geom_density(aes(x=months_inventory),col="darkblue",fill="lightblue")+
+  geom_vline(aes(xintercept=mean(months_inventory)),
+             color="red", linetype="dashed", size=1)+
+  geom_vline(aes(xintercept=quantile(months_inventory,seq(0,1,0.25))),
+             color="green3", linetype="dashed", size=1)+
+  geom_vline(aes(xintercept=median(months_inventory)),
+             color="orange", linetype="dashed", size=1)+
+  geom_vline(aes(xintercept=Mode(months_inventory)),
+             color="yellow", linetype="dashed", size=1)+
+  xlab("Months inventory")+
+  ylab("Density")+
+  labs(title = "Distribuzione Months inventory")
+
+#simmetria
+skewness(months_inventory)
+#curtosi
+kurtosis(months_inventory)-3
 
   
   
