@@ -1,11 +1,12 @@
 #impostazione zona di lavoro
-#setwd("C:\\Users\\gabri\\Desktop\\PrivateProject\\Analisi-Statistica-Vendite-Texas")
+setwd("C:\\Users\\gabri\\Desktop\\PrivateProject\\Analisi-Statistica-Vendite-Texas")
 
 #import librerie
 library(ggplot2)
 library(plotly)
 library("gridExtra")
 library("moments")
+library(ggthemes)
 
 #esportare in bella le tabelle
 # pdf("distr_anno.pdf")       # Export PDF
@@ -46,6 +47,11 @@ Mode <- function(x) {
   ux[which.max(tabulate(match(x, ux)))]
 }
 
+#funzione di normalizzazione
+normaliz <- function(x){
+  (x-min(x))/(max(x)-min(x))
+}
+
 #import dataset
 texas_price <- read.csv("realestate_texas.csv")
 #Diamo un occhiata al dataset
@@ -69,9 +75,7 @@ distr_freq_ass_city_mese = table(city,month)
 #distribuzione di frequenza relativa per citta e anno
 distr_freq_ass_city_anno = table(city,year)/length(city)
 
-
-
-G(month)
+G(city)
 
 #YEAR
 
@@ -97,12 +101,14 @@ distr_freq_ass_month
 
 summary(month)
 
-#VENDITE
+#SALES
 #Calcoliamo indici di posizione
-max(sales)-min(sales)
-summary(sales)
-IQR(sales)
+sales_range = max(sales)-min(sales)
+sales_summary = summary(sales)
+sales_IQR=IQR(sales)
+mode_sales = Mode(sales)
 
+#-----------------divisione in classi-----------------------------------------
 #dividiamo in classi le vendite per osservarne la distribuzione di frequenza
 sales_cl = cut(sales,seq(50,450,50))#divisa in 7 classi da 1 centimetro l'uno
 
@@ -112,15 +118,16 @@ df_freq_sales
 sales_cl = cut(sales,seq(50,450,100))#divisa in 7 classi da 1 centimetro l'uno
 df_freq_sales2 = distribuzione_assoluta(sales_cl)
 df_freq_sales2
+#----------------------------------------------------------
 
 var_sales=var(sales)#quanto è varia la nostra distribuzione
 sd_sales=sd(sales)#distanza media dei singoli dati
 cv_sales=CV(sales)#ci salviamo il coefficente di variazione per futuri confronti
 
 #simmetria
-skewness(sales)
+ass_sales = skewness(sales)
 #curtosi
-kurtosis(sales)-3
+curtosi_sales = kurtosis(sales)-3
 
 ggplot()+
   geom_density(aes(x=sales),col="darkblue",fill="lightblue")+
@@ -136,11 +143,12 @@ ggplot()+
   ylab("Density")+
   labs(title = "Distribuzione Sales")
 
+
 #VOLUME
-summary(volume)
-IQR(volume)
-max(volume)-min(volume)
-Mode(volume)
+volume_range = max(volume)-min(volume)
+volume_summary = summary(volume)
+volume_IQR=IQR(volume)
+mode_volume = Mode(volume)
 
 #dividiamo in classi il volume per osservarne la distribuzione di frequenza
 volume_cl = cut(volume,seq(8,90,10))#divisa in 7 classi da 1 centimetro l'uno
@@ -167,15 +175,15 @@ ggplot()+
   labs(title = "Distribuzione Volume")
 
 #simmetria
-skewness(volume)
+ass_volume=skewness(volume)
 #curtosi
-kurtosis(volume)-3
+curtosi_volume=kurtosis(volume)-3
 
 #MEDIAN PRICE
-summary(median_price)
-IQR(median_price)
-max(median_price)-min(median_price)
-Mode(median_price)
+median_price_range = max(median_price)-min(median_price)
+median_price_summary = summary(median_price)
+median_price_IQR=IQR(median_price)
+mode_median_price = Mode(median_price)
 
 #dividiamo in classi il volume per osservarne la distribuzione di frequenza
 median_price_cl = cut(median_price,seq(70000,180000,10000))#divisa in 7 classi da 1 centimetro l'uno
@@ -202,15 +210,15 @@ ggplot()+
   labs(title = "Distribuzione Median Price")
 
 #simmetria
-skewness(median_price)
+ass_median_price=skewness(median_price)
 #curtosi
-kurtosis(median_price)-3
+curtosi_median_price=kurtosis(median_price)-3
 
 #LISTING
-summary(listings)
-IQR(listings)
-max(listings)-min(listings)
-Mode(listings)
+listings_range = max(listings)-min(listings)
+listings_summary = summary(listings)
+listings_IQR=IQR(listings)
+mode_listings = Mode(listings)
 
 #dividiamo in classi il volume per osservarne la distribuzione di frequenza
 listings_cl = cut(listings,seq(70000,180000,10000))#divisa in 7 classi da 1 centimetro l'uno
@@ -237,15 +245,15 @@ ggplot()+
   labs(title = "Distribuzione Listings")
 
 #simmetria
-skewness(listings)
+ass_listings=skewness(listings)
 #curtosi
-kurtosis(listings)-3
+curtosi_listings=kurtosis(listings)-3
 
 #MONTHS INVENTORY
-summary(monts_inventory)
-IQR(months_inventory)
-max(months_inventory)-min(months_inventory)
-Mode(months_inventory)
+months_inventory_range = max(months_inventory)-min(months_inventory)
+months_inventory_summary = summary(months_inventory)
+months_inventory_IQR=IQR(months_inventory)
+mode_months_inventory = Mode(months_inventory)
 
 #dividiamo in classi il volume per osservarne la distribuzione di frequenza
 months_inventory_cl = cut(months_inventory,seq(70000,180000,10000))#divisa in 7 classi da 1 centimetro l'uno
@@ -272,9 +280,85 @@ ggplot()+
   labs(title = "Distribuzione Months inventory")
 
 #simmetria
-skewness(months_inventory)
+ass_months_inventory=skewness(months_inventory)
 #curtosi
-kurtosis(months_inventory)-3
+curtosi_months_inventory=kurtosis(months_inventory)-3
 
-  
+#costruzione tabella confronto valori
+#cbind(sales_summary,volume_summary,median_price_summary,listings_summary,months_inventory_summary)
+
+df_summary = as.data.frame(cbind(sales_summary,volume_summary,median_price_summary,listings_summary,months_inventory_summary))
+
+df2 = data.frame(sales_summary=c(sales_range,sales_IQR,mode_sales,var_sales,
+                                 sd_sales,cv_sales,ass_sales,curtosi_sales),
+                 volume_summary=c(volume_range,volume_IQR,mode_volume,var_volume,
+                                  sd_volume,cv_volume,ass_volume,curtosi_volume),
+                 median_price_summary=c(median_price_range,median_price_IQR,mode_median_price,
+                                        var_median_price,sd_median_price,cv_median_price,
+                                        ass_median_price,curtosi_median_price),
+                 listings_summary=c(listings_range,listings_IQR,mode_listings,var_listings,
+                                    sd_listings,cv_listings,ass_listings,curtosi_listings),
+                 months_inventory_summary=c(months_inventory_range,months_inventory_IQR,mode_months_inventory,
+                                            var_months_inventory,sd_months_inventory,cv_months_inventory,
+                                            ass_months_inventory,curtosi_months_inventory))
+
+rownames(df2) <- c("Range","IQR","Mode","Var","SD","CV","Asymmetry","Curtosi")
+df_all_value = rbind(df_summary,df2)
+
+png("test.png", height = 30*nrow(df_all_value), width = 170*ncol(df_all_value))
+grid.table(df_all_value)
+dev.off()
+
+#Plot
+#grafici a barre
+
+#Numero di vendita per citta
+ggplot(data=texas_price, aes(x=year, y=sales,fill=city)) +
+  geom_bar(stat="identity",width=0.5)+
+  labs(title="Numero di vendita negli Anni per citta",
+       x="Anni",
+       y="Numero Vendite")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
+#Numero totale di vendita per citta
+ggplot(data=texas_price, aes(x=city, y=sales,fill=city)) +
+  geom_bar(stat="identity",width=0.5)+
+  labs(title="Numero Totale di vendite per Citta",
+       x="Citta",
+       y="Numero Vendite")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
+#Numero di annunci in citta
+ggplot(data=texas_price, aes(x=year, y=listings,fill=city)) +
+  geom_bar(stat="identity",width=0.5)+
+  labs(title="Numero degli annunci per citta",
+       x="Anni",
+       y="Numero Annunci")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
+#Numero totale di annunci per citta
+ggplot(data=texas_price, aes(x=city, y=listings,fill=city)) +
+  geom_bar(stat="identity",width=0.5,)+
+  labs(title="Numero totale degli annunci per ",
+       x="Annunci",
+       y="Numero Annunci")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
+#Numero totale di annunci per anno
+ggplot(data=texas_price, aes(x=year, y=listings)) +
+  geom_bar(stat="identity",width=0.5,fill="lightblue")+
+  labs(title="Numero totale degli annunci per anno",
+       x="Annunci",
+       y="Numero Annunci")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
+ggplot()+
+  geom_line(aes(x=year,y=listings))
+
+
   
