@@ -55,7 +55,7 @@ normaliz <- function(x){
 #import dataset
 texas_price <- read.csv("realestate_texas.csv")
 #Diamo un occhiata al dataset
-head(texas_price,10)
+head(texas_price,20)
 
 attach(texas_price)
 
@@ -101,6 +101,10 @@ distr_freq_ass_month
 
 summary(month)
 
+#distribuzione di frequenza doppia Anno,Mese (per Probabilità)
+distr_freq_ass_anno_mese = table(year,month)
+distr_freq_rel_anno_mese = table(year,month)/length(month)
+
 #SALES
 #Calcoliamo indici di posizione
 sales_range = max(sales)-min(sales)
@@ -115,9 +119,35 @@ sales_cl = cut(sales,seq(50,450,50))#divisa in 7 classi da 1 centimetro l'uno
 df_freq_sales = distribuzione_assoluta(sales_cl)
 df_freq_sales
 
+#indice di gini per classe
+G(sales_cl)
+
+#grafico a barre
+#Distribuzione in classi
+ggplot(data=df_freq_sales, aes(x=ni, y=fi,fill=row.names(df_freq_sales))) +
+  geom_bar(stat="identity")+
+  labs(title="Distribuzione Vendite su 8 classi",
+       x="Classi",
+       y="Frequenza")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())+
+  guides(fill=guide_legend(title="Class"))
+
+
 sales_cl = cut(sales,seq(50,450,100))#divisa in 7 classi da 1 centimetro l'uno
 df_freq_sales2 = distribuzione_assoluta(sales_cl)
 df_freq_sales2
+
+G(sales_cl)
+
+ggplot(data=df_freq_sales2, aes(x=ni, y=fi,fill=row.names(df_freq_sales2))) +
+  geom_bar(stat="identity")+
+  labs(title="Distribuzione Vendite su 4 classi",
+       x="Classi",
+       y="Frequenza")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())+
+  guides(fill=guide_legend(title="Class"))
 #----------------------------------------------------------
 
 var_sales=var(sales)#quanto è varia la nostra distribuzione
@@ -141,7 +171,8 @@ ggplot()+
              color="yellow", linetype="dashed", size=1)+
   xlab("Sales")+
   ylab("Density")+
-  labs(title = "Distribuzione Sales")
+  labs(title = "Distribuzione Sales")+
+  theme_fivethirtyeight()
 
 
 #VOLUME
@@ -309,56 +340,62 @@ png("test.png", height = 30*nrow(df_all_value), width = 170*ncol(df_all_value))
 grid.table(df_all_value)
 dev.off()
 
+#
+City_sales_volume_meanPrice=texas_price %>% #prendiamo il dataset
+  group_by(city)%>% 
+  summarise(Totale_Guadagni=sum(volume),
+            Totale_vendite=sum(sales),
+            Prezzo_Medio=mean(median_price))
+
 #Plot
 #grafici a barre
 
-#Numero di vendita per citta
-ggplot(data=texas_price, aes(x=year, y=sales,fill=city)) +
-  geom_bar(stat="identity",width=0.5)+
-  labs(title="Numero di vendita negli Anni per citta",
-       x="Anni",
-       y="Numero Vendite")+
-  theme_fivethirtyeight()+
-  theme(axis.title = element_text())
-
-#Numero totale di vendita per citta
+#In quale città ho venduto di più ?
 ggplot(data=texas_price, aes(x=city, y=sales,fill=city)) +
   geom_bar(stat="identity",width=0.5)+
-  labs(title="Numero Totale di vendite per Citta",
+  labs(title="Quale Città ha venduto più Case ?",
        x="Citta",
        y="Numero Vendite")+
   theme_fivethirtyeight()+
-  theme(axis.title = element_text())
+  theme(axis.title = element_text(),legend.position='none')
 
-#Numero di annunci in citta
-ggplot(data=texas_price, aes(x=year, y=listings,fill=city)) +
+#Quale stato l'anno con più vendite ?
+ggplot(data=texas_price, aes(x=year, y=sales,fill=city)) +
   geom_bar(stat="identity",width=0.5)+
-  labs(title="Numero degli annunci per citta",
+  labs(title="Quale stato l'anno con più vendite ?",
        x="Anni",
-       y="Numero Annunci")+
+       y="Vendite")+
   theme_fivethirtyeight()+
   theme(axis.title = element_text())
 
-#Numero totale di annunci per citta
+#In città ha avuto un fatturato più alto ?
+ggplot(data=texas_price, aes(x=city, y=volume,fill=city)) +
+  geom_bar(stat="identity",width=0.5)+
+  labs(title="In che città c'è stato più guadagno ?",
+       x="Città",
+       y="Millioni")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text(),legend.position='none')
+
+#In quali citta i prezzi sono più alti ?
+ggplot(data=City_sales_volume_meanPrice, aes(x=city, y=Prezzo_Medio,fill=city)) +
+  geom_bar(stat="identity",width=0.5)+
+  labs(title="In quali citta i prezzi sono più alti ?",
+       x="Città",
+       y="Prezzo")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text(),legend.position='none')
+
+#Quale la città con più annunci ?
 ggplot(data=texas_price, aes(x=city, y=listings,fill=city)) +
-  geom_bar(stat="identity",width=0.5,)+
-  labs(title="Numero totale degli annunci per ",
-       x="Annunci",
-       y="Numero Annunci")+
+  geom_bar(stat="identity",width=0.5)+
+  labs(title="Quale la città con più annunci ?",
+       x="Città",
+       y="Annunci")+
   theme_fivethirtyeight()+
-  theme(axis.title = element_text())
+  theme(axis.title = element_text(),legend.position='none')
 
-#Numero totale di annunci per anno
-ggplot(data=texas_price, aes(x=year, y=listings)) +
-  geom_bar(stat="identity",width=0.5,fill="lightblue")+
-  labs(title="Numero totale degli annunci per anno",
-       x="Annunci",
-       y="Numero Annunci")+
-  theme_fivethirtyeight()+
-  theme(axis.title = element_text())
 
-ggplot()+
-  geom_line(aes(x=year,y=listings))
 
 
   
