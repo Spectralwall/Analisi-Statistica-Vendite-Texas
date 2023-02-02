@@ -422,6 +422,15 @@ ggplot(data=texas_price, aes(x=year, y=sales,fill=city)) +
   theme_fivethirtyeight()+
   theme(axis.title = element_text())
 
+#Quale stato l'anno con più vendite ? (ma normalizzato)
+ggplot(data=texas_price, aes(x=year, y=sales,fill=city)) +
+  geom_bar(stat="identity",position = "fill",width=0.5)+
+  labs(title="Quale stato l'anno con più vendite ?",
+       x="Anni",
+       y="Vendite")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
 #Anno con più vendite ma con più barre
 ggplot()+
   geom_col(data = texas_price,aes(x=year,y=sales,fill=city),position ="dodge")+
