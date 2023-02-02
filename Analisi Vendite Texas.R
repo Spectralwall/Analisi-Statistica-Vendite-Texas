@@ -359,7 +359,41 @@ City_sales_volume_meanPrice=texas_price %>% #prendiamo il dataset
             AnnunciMediSoddisfatti=mean(perc_satisfied_ads))
 
 #Plot
-#grafici a barre
+
+#box plot per confronti
+#distribuzione prezzo mediano nelle varie città
+ggplot(data=texas_price)+
+  geom_boxplot(aes(x=city,y=median_price,fill=city))+
+  labs(title="Distribuzione prezzo mediano delle case nelle varie città",
+       x="Citta",
+       y="Prezzo Mediano")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text(),legend.position='none')
+
+#confronto distribuzioni vendite nelle città
+ggplot(data=texas_price)+
+  geom_boxplot(aes(x=city,y=sales,fill=city))+
+  labs(title="Distribuzione vendite nelle varie città",
+       x="Citta",
+       y="Vendite")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text(),legend.position='none')
+
+#confronto distribuzioni vendite nei vari anni per le citta
+texas_price %>% 
+  filter(year %in% c(2010,2011,2012,2013,2014)) %>%
+  ggplot(aes(x=city, y=sales, fill=factor(year))) +
+  geom_boxplot()+
+  labs(title="Distribuzione Vendite negli anni per citta",
+       x="Citta",
+       y="Vendite")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())+
+  guides(fill=guide_legend(title="Anni"))
+
+
+
+#grafici a barre per le domande
 
 #In quale città ho venduto di più ?
 ggplot(data=texas_price, aes(x=city, y=sales,fill=city)) +
@@ -382,6 +416,15 @@ ggplot(data=City_sales_volume_meanPrice, aes(x=city, y=AnnunciMediSoddisfatti,fi
 #Quale stato l'anno con più vendite ?
 ggplot(data=texas_price, aes(x=year, y=sales,fill=city)) +
   geom_bar(stat="identity",width=0.5)+
+  labs(title="Quale stato l'anno con più vendite ?",
+       x="Anni",
+       y="Vendite")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
+#Anno con più vendite ma con più barre
+ggplot()+
+  geom_col(data = texas_price,aes(x=year,y=sales,fill=city),position ="dodge")+
   labs(title="Quale stato l'anno con più vendite ?",
        x="Anni",
        y="Vendite")+
@@ -415,6 +458,90 @@ ggplot(data=texas_price, aes(x=city, y=listings,fill=city)) +
        y="Annunci")+
   theme_fivethirtyeight()+
   theme(axis.title = element_text(),legend.position='none')
+
+#LINE CHART
+
+#Raggrupiamo per città e creiamo un mini dattaset con dati utili per i plot
+time_period_ragrup=texas_price %>% #prendiamo il dataset
+  group_by(year,city)%>% 
+  summarise(guadagni=sum(volume))
+
+#confronti i guadagni negli anni per citta
+ggplot() +
+  geom_line(data = time_period_ragrup, 
+            aes(x = year, y = guadagni,color=city),size=1)+
+  labs(title="Andamento dei guadagni negli Anni per città",
+       x="Anni",
+       y="Guadagni")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
+#Raggrupiamo per mesi e anni e succesivamente filtriamo
+time_period_ragrup_month=texas_price %>% #prendiamo il dataset
+  group_by(year,month,city)%>% 
+  summarise(guadagni=sum(volume))
+
+#filtrimao e plottimo per i vari anni
+anno2010 =filter(time_period_ragrup_month,year==2010)
+
+ggplot() +
+  geom_line(data = anno2010, 
+            aes(x = month, y = guadagni,color=city),size=1)+
+  labs(title="Andamento dei guadagni nei mesi del 2010 per città",
+       x="Mesi",
+       y="Guadagni")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
+#filtrimao e plottimo per i vari anni
+anno2011 =filter(time_period_ragrup_month,year==2011)
+
+ggplot() +
+  geom_line(data = anno2011, 
+            aes(x = month, y = guadagni,color=city),size=1)+
+  labs(title="Andamento dei guadagni nei mesi del 2011 per città",
+       x="Mesi",
+       y="Guadagni")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
+#filtrimao e plottimo per i vari anni
+anno2012 =filter(time_period_ragrup_month,year==2012)
+
+ggplot() +
+  geom_line(data = anno2012, 
+            aes(x = month, y = guadagni,color=city),size=1)+
+  labs(title="Andamento dei guadagni nei mesi del 2012 per città",
+       x="Mesi",
+       y="Guadagni")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
+#filtrimao e plottimo per i vari anni
+anno2013 =filter(time_period_ragrup_month,year==2013)
+
+ggplot() +
+  geom_line(data = anno2013, 
+            aes(x = month, y = guadagni,color=city),size=1)+
+  labs(title="Andamento dei guadagni nei mesi del 2013 per città",
+       x="Mesi",
+       y="Guadagni")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
+#filtrimao e plottimo per i vari anni
+anno2014 =filter(time_period_ragrup_month,year==2014)
+
+ggplot() +
+  geom_line(data = anno2014, 
+            aes(x = month, y = guadagni,color=city),size=1)+
+  labs(title="Andamento dei guadagni nei mesi del 2014 per città",
+       x="Mesi",
+       y="Guadagni")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text())
+
+
 
 detach(texas_price)
 
