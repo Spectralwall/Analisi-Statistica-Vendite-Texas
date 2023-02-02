@@ -340,12 +340,23 @@ png("test.png", height = 30*nrow(df_all_value), width = 170*ncol(df_all_value))
 grid.table(df_all_value)
 dev.off()
 
-#
+#aggiungere una colonna con il prezzo medio
+#per ogni record prendo il volume di vendita e lo divido per il numero dlle vendite
+#dopodiche lo moltiplico per mille per averlo sulla stessa unita di misura del prezzo mediano
+texas_price$mean_price = (texas_price$volume*1000)/texas_price$sales
+
+#Aggiungo colonna su annunci di vendità
+texas_price$perc_satisfied_ads = (texas_price$sales/texas_price$listings)*100
+
+
+#Raggrupiamo per città e creiamo un mini dattaset con dati utili per i plot
 City_sales_volume_meanPrice=texas_price %>% #prendiamo il dataset
   group_by(city)%>% 
   summarise(Totale_Guadagni=sum(volume),
             Totale_vendite=sum(sales),
-            Prezzo_Medio=mean(median_price))
+            Prezzo_Medio=mean(mean_price)*1000,
+            Annunci=sum(listings),
+            AnnunciMediSoddisfatti=mean(perc_satisfied_ads))
 
 #Plot
 #grafici a barre
@@ -356,6 +367,15 @@ ggplot(data=texas_price, aes(x=city, y=sales,fill=city)) +
   labs(title="Quale Città ha venduto più Case ?",
        x="Citta",
        y="Numero Vendite")+
+  theme_fivethirtyeight()+
+  theme(axis.title = element_text(),legend.position='none')
+
+#In quale città abbiamo più annunci soddisfatti
+ggplot(data=City_sales_volume_meanPrice, aes(x=city, y=AnnunciMediSoddisfatti,fill=city)) +
+  geom_bar(stat="identity",width=0.5)+
+  labs(title="Quale Città ha soddisfatto più annunci ?",
+       x="Citta",
+       y="Percentuale Annunci soddisfatti")+
   theme_fivethirtyeight()+
   theme(axis.title = element_text(),legend.position='none')
 
@@ -386,6 +406,7 @@ ggplot(data=City_sales_volume_meanPrice, aes(x=city, y=Prezzo_Medio,fill=city)) 
   theme_fivethirtyeight()+
   theme(axis.title = element_text(),legend.position='none')
 
+
 #Quale la città con più annunci ?
 ggplot(data=texas_price, aes(x=city, y=listings,fill=city)) +
   geom_bar(stat="identity",width=0.5)+
@@ -395,7 +416,7 @@ ggplot(data=texas_price, aes(x=city, y=listings,fill=city)) +
   theme_fivethirtyeight()+
   theme(axis.title = element_text(),legend.position='none')
 
-
+detach(texas_price)
 
 
   
